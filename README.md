@@ -35,7 +35,7 @@ Before starting the application, ensure you have the following installed:
 
 1. To start the application, run the following command:
 ```bash
-uvicorn app.main:app --reload
+python app/main.py
 
 ```
 
