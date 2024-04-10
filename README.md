@@ -33,15 +33,10 @@ Before starting the application, ensure you have the following installed:
 
 ## Running the Application
 
-1. Navigate to the app directory:
-    ```bash
-    cd app
-    ```
-
-2. To start the application, run the following command:
+1. To start the application, run the following command:
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 
 ```
 
-The application will start running on http://localhost:8000 by default. You can access the API endpoints using a web browser.
+You can access the API endpoints using a web browser.

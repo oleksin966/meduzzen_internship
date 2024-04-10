@@ -2,3 +2,6 @@ venv/
 .env
 .env.sample
 __init__.py
+
+**/__pycache__/
+tests/.pytest_cache/
