@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    container_name: "meduzzen-container"
+    env_file:
+      - .env
+    ports:
+      - "${port}:${port}"
+    volumes:
+      - .:/project
