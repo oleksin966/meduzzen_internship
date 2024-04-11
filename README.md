@@ -36,7 +36,20 @@ Before starting the application, ensure you have the following installed:
 1. To start the application, run the following command:
 ```bash
 python app/main.py
+```
 
+## Running the Application with Docker Compose
+
+1. Make sure to configure your environment by creating a .env file with the required variables before running Docker Compose.
+
+To build and start the application using Docker Compose, run the following command:
+```bash
+docker-compose up --build
+```
+
+For subsequent runs, you can use:
+```bash
+docker-compose up
 ```
 
 You can access the API endpoints using a web browser.
