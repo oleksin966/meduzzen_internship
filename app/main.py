@@ -1,12 +1,15 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from routers.health_check import router
+from routers.connect_check import router_connects
 from core.config import settings
 
 app = FastAPI()
 
 origins = [
     "http://127.0.0.1:8000",
+    "postgres://db:5432",
+    "redis://redis:6379",
 ]
 
 app.add_middleware(
@@ -18,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(router_connects)
 
 def run():
     if settings.environment == "development":

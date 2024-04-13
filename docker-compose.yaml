@@ -1,12 +1,45 @@
-version: '3'
+version: '3.8'
 
 services:
-  web:
-    build: .
-    container_name: "meduzzen-container"
+  db:
+    container_name: "postgres"
+    image: postgres:16
     env_file:
       - .env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: meduzzen
+    ports:
+      - "${db_port}:${db_port}" 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    container_name: "redis"
+    image: redis
+    command: ["redis-server", "--port", "${redis_port}"]
+    ports:
+      - "${redis_port}:${redis_port}"  
+
+  web:
+    container_name: "fastapi"
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: "redis://redis:${redis_port}"
+      DATABASE_URL: "postgresql+asyncpg://${db_user}:${db_password}@db:${db_port}/${db_name}"  
     ports:
       - "${port}:${port}"
+    depends_on:
+      - db
+      - redis
     volumes:
       - .:/project
+
+volumes:
+  postgres_data:
+
+

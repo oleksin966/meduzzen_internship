@@ -2,6 +2,7 @@
 .gitignore
 
 venv
+.postgres
 
 .env.sample
 .pytest_cache
