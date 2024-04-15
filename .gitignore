@@ -3,3 +3,6 @@ venv/
 
 **/__pycache__/
 tests/.pytest_cache/
+
+test.txt
+.postgres
