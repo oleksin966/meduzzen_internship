@@ -8,8 +8,6 @@ app = FastAPI()
 
 origins = [
     "http://127.0.0.1:8000",
-    "postgres://db:5432",
-    "redis://redis:6379",
 ]
 
 app.add_middleware(
