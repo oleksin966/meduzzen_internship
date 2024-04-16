@@ -53,3 +53,35 @@ docker-compose up
 ```
 
 You can access the API endpoints using a web browser.
+
+## Applying Migrations with Alembic
+
+1. If you haven't already installed Alembic, you can do so using pip:
+
+```bash
+pip install alembic
+```
+
+2. Before using Alembic, you need to configure it to connect to your database. This involves creating an `alembic.ini` file and configuring it with your database connection details:
+
+```bash
+sqlalchemy.url = driver://{db_user}:{db_password}@{db_host}/{db_name}
+```
+
+3. Run the `alembic revision` command with the `--autogenerate` option to automatically generate migration scripts based on changes in your SQLAlchemy models:
+
+```bash
+alembic revision --autogenerate -m "Description of the migration"
+```
+
+4. Apply the generated migrations to the database using the alembic upgrade command:
+
+```bash
+alembic upgrade head
+```
+
+5. Optionally, provide instructions on how to rollback migrations if needed. This can be done using the `alembic downgrade` command.
+
+```bash
+alembic downgrade -1
+```

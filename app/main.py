@@ -2,7 +2,12 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from routers.health_check import router
 from routers.connect_check import router_connects
+from routers.users import router_user
 from core.config import settings
+
+from core.logging import LOGGING_CONFIG
+from logging.config import dictConfig
+from logging import getLogger
 
 app = FastAPI()
 
@@ -20,6 +25,10 @@ app.add_middleware(
 
 app.include_router(router)
 app.include_router(router_connects)
+app.include_router(router_user)
+
+dictConfig(LOGGING_CONFIG)
+logger = getLogger(__name__)
 
 def run():
     if settings.environment == "development":
