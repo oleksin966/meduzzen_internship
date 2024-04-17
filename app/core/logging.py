@@ -1,6 +1,6 @@
-from os import environ
+from .config import settings
 
-ROOT_LEVEL = environ.get('PROD', "INFO")
+ROOT_LEVEL = settings.PROD
 
 LOGGING_CONFIG = {
     "version": 1,
