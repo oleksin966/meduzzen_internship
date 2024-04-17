@@ -46,7 +46,7 @@ async def check_db_table_exists(session: AsyncSession = Depends(get_async_sessio
 
         return {"table_exists": table_exists}
     except Exception as e:
-        logger.exception("Error occurred while checking database table existence")
+        logger.error("Error occurred while checking database table existence")
         raise HTTPException(status_code=500, detail=str(e))
 
 
