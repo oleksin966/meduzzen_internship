@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     redis_host: str
     redis_port: int
 
+    PROD: str = "INFO"
 
     class Config:
         env_file = ".env"

@@ -8,12 +8,11 @@ class Base(DeclarativeBase, AsyncAttrs):
     __abstract__ = True
     __tablename__ = "base_table"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
 
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     age = Column(Integer)
     email = Column(String, unique=True, index=True, nullable=False)

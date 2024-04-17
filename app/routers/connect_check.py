@@ -9,7 +9,11 @@ from db.redis import get_redis_client
 from aioredis import Redis
 from db.models import Base
 
+from logging import getLogger
+
 router_connects = APIRouter()
+
+logger = getLogger(__name__)
 
 #check database connection
 @router_connects.get("/db/")
@@ -37,8 +41,12 @@ async def check_db_table_exists(session: AsyncSession = Depends(get_async_sessio
     try:
         result = await session.execute(text("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'users')"))
         table_exists = result.scalar()
+
+        logger.info("Database table check successful. Table exists: %s", table_exists)
+
         return {"table_exists": table_exists}
     except Exception as e:
+        logger.exception("Error occurred while checking database table existence")
         raise HTTPException(status_code=500, detail=str(e))
 
 

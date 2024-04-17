@@ -1,9 +1,10 @@
 from pydantic import BaseModel
+from typing import List, Optional
 
 class UserBase(BaseModel):
     pass
 
-class User(UserBase):
+class UserSchema(UserBase):
     id: int
     username: str
     age: int
@@ -30,7 +31,9 @@ class UserUpdate(UserBase):
     username: str
 
 class UserList(UserBase):
-    users: list[User]
+    users: List[UserSchema]
 
 class UserDetail(UserBase):
-    user: User
+    user: UserSchema
+
+
