@@ -39,7 +39,7 @@ async def check_redis_connection(redis: Redis = Depends(get_redis_client)):
 @router_connects.get("/db_users/")
 async def check_db_table_exists(session: AsyncSession = Depends(get_async_session)):
     try:
-        result = await session.execute(text("SELECT 1"))
+        result = await session.execute(text("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'users')"))
         table_exists = result.scalar()
 
         logger.info("Database table check successful. Table exists: %s", table_exists)
