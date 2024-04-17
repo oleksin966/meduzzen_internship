@@ -6,3 +6,5 @@ tests/.pytest_cache/
 
 test.txt
 .postgres
+
+*.log
