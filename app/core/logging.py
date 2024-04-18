@@ -1,6 +1,8 @@
-from os import environ
+from .config import settings
+from logging import getLogger, INFO
+from logging.config import dictConfig
 
-ROOT_LEVEL = environ.get('PROD', "INFO")
+ROOT_LEVEL = settings.PROD
 
 LOGGING_CONFIG = {
     "version": 1,
@@ -32,3 +34,6 @@ LOGGING_CONFIG = {
         },
     },
 }
+
+
+logger = getLogger(__name__)

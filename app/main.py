@@ -1,13 +1,15 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+
 from routers.health_check import router
 from routers.connect_check import router_connects
 from routers.users import router_user
-from core.config import settings
 
-from core.logging import LOGGING_CONFIG
+from core.config import settings
+from core.logging import LOGGING_CONFIG, logger
 from logging.config import dictConfig
-from logging import getLogger
+
+
 
 app = FastAPI()
 
@@ -28,12 +30,12 @@ app.include_router(router_connects)
 app.include_router(router_user)
 
 dictConfig(LOGGING_CONFIG)
-logger = getLogger(__name__)
+logger.setLevel(INFO)
 
 def run():
     if settings.environment == "development":
         import uvicorn
-        uvicorn.run("main:app", host=settings.host, port=settings.port, reload=settings.reload)
+        uvicorn.run("main:app", host=settings.host, port=settings.port, reload=settings.reload, log_config=LOGGING_CONFIG)
     else:
         pass
 

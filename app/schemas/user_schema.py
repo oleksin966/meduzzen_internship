@@ -7,10 +7,10 @@ class UserBase(BaseModel):
 class UserSchema(UserBase):
     id: int
     username: str
-    age: int
     email: str
     password: str
-    description: str
+    age: Optional[int] = None
+    description: Optional[str] = None
 
 class UserId(UserBase):
     id: int
