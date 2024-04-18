@@ -1,6 +1,8 @@
 from .config import settings
-from logging import getLogger, INFO
+
+from logging import getLogger
 from logging.config import dictConfig
+
 
 ROOT_LEVEL = settings.PROD
 
@@ -36,4 +38,7 @@ LOGGING_CONFIG = {
 }
 
 
+
 logger = getLogger(__name__)
+
+
