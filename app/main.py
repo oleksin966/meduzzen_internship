@@ -8,6 +8,7 @@ from routers.users import router_user
 from core.config import settings
 from core.logging import LOGGING_CONFIG, logger
 from logging.config import dictConfig
+from logging import INFO
 
 
 
