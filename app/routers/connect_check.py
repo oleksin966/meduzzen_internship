@@ -2,18 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import OperationalError
-from sqlalchemy import text, Table
+from sqlalchemy import text
 
 from db.database import get_async_session
 from db.redis import get_redis_client
 from aioredis import Redis
-from db.models import Base
 
 from logging import getLogger
 
-router_connects = APIRouter()
-
 logger = getLogger(__name__)
+
+
+router_connects = APIRouter()
 
 #check database connection
 @router_connects.get("/db/")

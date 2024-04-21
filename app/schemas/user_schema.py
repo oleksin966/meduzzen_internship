@@ -7,10 +7,10 @@ class UserBase(BaseModel):
 class UserSchema(UserBase):
     id: int
     username: str
-    age: int
     email: str
     password: str
-    description: str
+    age: Optional[int] = None
+    description: Optional[str] = None
 
 class UserId(UserBase):
     id: int
@@ -25,10 +25,10 @@ class UserSignUp(UserBase):
     email: str
 
 class UserUpdate(UserBase):
-    age: int
-    description: str
-    password: str
-    username: str
+    age: Optional[int]
+    description: Optional[str]
+    password: Optional[str]
+    username: Optional[str]
 
 class UserList(UserBase):
     users: List[UserSchema]

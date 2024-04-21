@@ -1,13 +1,15 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+
 from routers.health_check import router
 from routers.connect_check import router_connects
-from routers.users import router_user
+from routers.user_route import router_user
 from core.config import settings
 
-from core.logging import LOGGING_CONFIG
-from logging.config import dictConfig
+from core.logging import LOGGING
 from logging import getLogger
+
+logger = getLogger(__name__)
 
 app = FastAPI()
 
@@ -23,17 +25,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
+
+# app.include_router(router)
 app.include_router(router_connects)
 app.include_router(router_user)
-
-dictConfig(LOGGING_CONFIG)
-logger = getLogger(__name__)
 
 def run():
     if settings.environment == "development":
         import uvicorn
-        uvicorn.run("main:app", host=settings.host, port=settings.port, reload=settings.reload)
+        uvicorn.run("main:app", host=settings.host, port=settings.port, reload=settings.reload, log_config=LOGGING)
     else:
         pass
 
