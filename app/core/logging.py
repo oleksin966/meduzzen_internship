@@ -1,39 +1,30 @@
-from .config import settings
-from logging import getLogger, INFO
-from logging.config import dictConfig
+import logging.config
+from pythonjsonlogger import jsonlogger
 
-ROOT_LEVEL = settings.PROD
-
-LOGGING_CONFIG = {
+LOGGING = {
     "version": 1,
-    "disable_existing_loggers": True,
+    "disable_existing_loggers": False,
     "formatters": {
-        "standard": {"format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"},
+        "json": {
+            "format": "%(asctime)s %(levelname)s %(message)s",
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+        }
     },
     "handlers": {
-        "default": {
-            "level": "INFO",
-            "formatter": "standard",
+        "stdout": {
             "class": "logging.StreamHandler",
-            "stream": "ext://sys.stdout",  
-        },
+            "stream": "ext://sys.stdout",
+            "formatter": "json",
+        }
     },
-    "loggers": {
-        "": {  
-            "level": ROOT_LEVEL, 
-            "handlers": ["default"],
-            "propagate": False,
-        },
-        "uvicorn.error": {
-            "level": "DEBUG",
-            "handlers": ["default"],
-        },
-        "uvicorn.access": {
-            "level": "DEBUG",
-            "handlers": ["default"],
-        },
-    },
+    "loggers": {"": {"handlers": ["stdout"], "level": "DEBUG"}},
 }
 
 
-logger = getLogger(__name__)
+
+
+logging.config.dictConfig(LOGGING)
+
+
+
+

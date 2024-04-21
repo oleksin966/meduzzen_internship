@@ -8,7 +8,11 @@ from db.database import get_async_session
 from db.redis import get_redis_client
 from aioredis import Redis
 from db.models import Base
-from core.logging import logger
+
+from logging import getLogger
+
+logger = getLogger(__name__)
+
 
 router_connects = APIRouter()
 

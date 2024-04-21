@@ -25,10 +25,10 @@ class UserSignUp(UserBase):
     email: str
 
 class UserUpdate(UserBase):
-    age: int
-    description: str
-    password: str
-    username: str
+    age: Optional[int]
+    description: Optional[str]
+    password: Optional[str]
+    username: Optional[str]
 
 class UserList(UserBase):
     users: List[UserSchema]
