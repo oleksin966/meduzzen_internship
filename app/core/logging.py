@@ -1,7 +1,9 @@
+
 import logging.config
 from pythonjsonlogger import jsonlogger
 
 LOGGING = {
+
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
@@ -21,10 +23,7 @@ LOGGING = {
 }
 
 
-
-
 logging.config.dictConfig(LOGGING)
-
 
 
 

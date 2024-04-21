@@ -6,7 +6,6 @@ from db.models import User
 from db.database import get_async_session
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 from services.user_service import UserServiceCrud
 
 router_user = APIRouter()
