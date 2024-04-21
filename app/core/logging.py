@@ -20,11 +20,7 @@ LOGGING = {
     "loggers": {"": {"handlers": ["stdout"], "level": "DEBUG"}},
 }
 
-
-
-
 logging.config.dictConfig(LOGGING)
-
 
 
 
