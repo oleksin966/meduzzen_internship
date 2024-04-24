@@ -1,10 +1,16 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert, delete, update
-from schemas.user_schema import UserSignUp, UserSchema, UserList, UserUpdate
+from schemas.user_schema import UserSignUp, UserSignUpEmail, UserSchema, UserList, UserUpdate
 from db.models import User
 from typing import List, Dict
 from utils.utils import hash_password, Paginate
 from utils.decorators import exception_handler
+
+
+class EmailAlreadyExistsException(Exception):
+    def __init__(self, message="Email already exists"):
+        self.message = message
+        super().__init__(self.message)
 
 
 class UserServiceCrud:
@@ -26,14 +32,14 @@ class UserServiceCrud:
 
 	@exception_handler
 	async def create_user(self, user: UserSignUp) -> User:
-		model_dump = user.model_dump()
-		model_dump["password"] = await hash_password(model_dump["password"])
-		new_user = User(**model_dump)
-		self.session.add(new_user)
+	    model_dump = user.model_dump()
+	    model_dump["password"] = hash_password(model_dump["password"])
+	    new_user = User(**model_dump)
+	    self.session.add(new_user)
 
-		await self.session.commit()
-		await self.session.refresh(new_user)
-		return new_user
+	    await self.session.commit()
+	    await self.session.refresh(new_user)
+	    return new_user
 
 	@exception_handler
 	async def update_user(self, user_id: int, data: Dict) -> User:

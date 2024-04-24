@@ -11,6 +11,7 @@ from services.user_service import UserServiceCrud
 
 router_user = APIRouter()
 
+
 @router_user.get('/users/list/', response_model=List[UserSchema])
 async def users_list(
         page: int,
