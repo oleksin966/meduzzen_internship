@@ -52,6 +52,7 @@ class Paginate:
         result = await self.db.execute(statement)
         return result.scalars().all()
 
+
 async def check_existing_user(session, field, value):
     existing_user = await session.execute(select(User).where(field == value))
     if existing_user.scalar_one_or_none():
@@ -61,4 +62,5 @@ async def get_user_by_field(session: AsyncSession, field: Column, value: str) ->
     query = select(User).where(field == value)
     user = await session.execute(query)
     return user.scalar_one_or_none()
+
 
