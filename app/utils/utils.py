@@ -26,7 +26,16 @@ def decode_token(token: str):
             audience=settings.AUTH0_API_AUDIENCE,
             issuer=settings.AUTH0_ISSUER,
         )
+
         return payload
+    except (InvalidTokenError, ValidationError):
+        payload_without_auth0 = decode(
+            token,
+            settings.SIGNING_KEY,
+            algorithms=settings.AUTH0_ALGORITHMS,
+        )
+
+        return payload_without_auth0
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

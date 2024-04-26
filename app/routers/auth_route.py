@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Security
 from db.models import User
 from db.database import get_async_session
-from schemas.user_schema import TokenSchema, UserSchema, UserSignUp, UserSignIn
+from schemas.user_schema import TokenSchema, UserSchema, UserSignUp, UserSignIn, TokenData
 from utils.auth import VerifyToken, create_access_token, get_current_user
 from utils.utils import verify_password, check_existing_user, get_user_by_field
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.user_service import UserServiceCrud
 from fastapi.security import OAuth2PasswordRequestForm
+from typing import Union
 
 router_auth = APIRouter()
 auth = VerifyToken()
@@ -44,20 +45,25 @@ async def login(
         )
     
     return {
-        "token": create_access_token(user.username, user.email),
+        "token": create_access_token(data = {"sub": user.username,"email": user.email}),
+        "token_type": "bearer"
     }
 
 
-@router_auth.get("/me", summary="Get current user", response_model=UserSchema)
-def private(
-        user: UserSchema = Depends(get_current_user),
-        token: str = Security(auth.verify) # make private endpoint
-    ):
-    return user #return logged user
+@router_auth.get("/me", summary="Get current user", response_model=Union[UserSchema, TokenData])
+async def private(
+        session: AsyncSession = Depends(get_async_session),
+        email: TokenData = Depends(get_current_user),
+        token: str = Security(auth.verify)
+    ): 
+    user_in_db = await get_user_by_field(session, User.email, email)
+    if user_in_db:
+        return user_in_db
+    else:
+        return {"email":email} # IF USER EXIST IN DB, THAN RETURN HIS SCHEMA, ELSE RETURN HIS AUTH0 EMAIL
 
 @router_auth.get("/token", summary="Get token info")
-def token(
-        user: UserSchema = Depends(get_current_user),
-        token: str = Security(auth.verify) # make private endpoint
+async def token(
+        token: str = Security(auth.verify)
     ):
-    return {"token payload": token} #return payload from current token
+    return token # GET TOKEN 

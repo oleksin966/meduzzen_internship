@@ -40,7 +40,6 @@ def run():
         uvicorn.run("main:app", host=settings.host, port=settings.port, reload=settings.reload, log_config=LOGGING)
     else:
         pass
-
+        
 if __name__ == "__main__":
     run()
-

@@ -44,6 +44,7 @@ class UserDetail(UserBase):
 
 class TokenSchema(BaseModel):
     token: str
+    token_type: str
 
 class TokenPayload(BaseModel):
     sub: str
@@ -51,4 +52,7 @@ class TokenPayload(BaseModel):
 
     class Config:
         populate_by_name = True
+
+class TokenData(BaseModel):
+    email: str
 
