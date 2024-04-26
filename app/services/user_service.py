@@ -7,12 +7,6 @@ from utils.utils import hash_password, Paginate
 from utils.decorators import exception_handler
 
 
-class EmailAlreadyExistsException(Exception):
-    def __init__(self, message="Email already exists"):
-        self.message = message
-        super().__init__(self.message)
-
-
 class UserServiceCrud:
 	def __init__(self, session: AsyncSession):
 		self.session = session
@@ -40,6 +34,7 @@ class UserServiceCrud:
 	    await self.session.commit()
 	    await self.session.refresh(new_user)
 	    return new_user
+
 
 	@exception_handler
 	async def update_user(self, user_id: int, data: Dict) -> User:
