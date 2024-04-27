@@ -36,6 +36,9 @@ class UserUpdate(UserBase):
     password: Optional[str]
     username: Optional[str]
 
+class UserEmail(BaseModel):
+    email: str
+
 class UserList(UserBase):
     users: List[UserSchema]
 
@@ -53,6 +56,4 @@ class TokenPayload(BaseModel):
     class Config:
         populate_by_name = True
 
-class TokenData(BaseModel):
-    email: str
 
