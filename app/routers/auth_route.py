@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Security
 from db.models import User
 from db.database import get_async_session
-from schemas.user_schema import TokenSchema, UserSchema, UserSignUp, UserSignIn, TokenData
+from schemas.user_schema import TokenSchema, UserSchema, UserSignUp, UserEmail
 from utils.auth import VerifyToken, create_access_token, get_current_user
 from utils.utils import verify_password, check_existing_user, get_user_by_field
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -50,17 +50,17 @@ async def login(
     }
 
 
-@router_auth.get("/me", summary="Get current user", response_model=Union[UserSchema, TokenData])
+@router_auth.get("/me", summary="Get current user", response_model=Union[UserSchema, UserEmail])
 async def private(
         session: AsyncSession = Depends(get_async_session),
-        email: TokenData = Depends(get_current_user),
+        email: UserEmail = Depends(get_current_user),
         token: str = Security(auth.verify)
     ): 
     user_in_db = await get_user_by_field(session, User.email, email)
     if user_in_db:
         return user_in_db
     else:
-        return {"email":email} # IF USER EXIST IN DB, THAN RETURN HIS SCHEMA, ELSE RETURN HIS AUTH0 EMAIL
+        return UserEmail(email=email) # IF USER EXIST IN DB, THAN RETURN HIS SCHEMA, ELSE RETURN AUTH0 USER
 
 @router_auth.get("/token", summary="Get token info")
 async def token(
