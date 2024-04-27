@@ -67,6 +67,9 @@ async def update_company(
     if data["description"] is None:
         data.pop("description", None)
 
+    if data["visibility"] is None:
+        data.pop("visibility", None)
+
     user = await get_auth_user(session, email)
     company_service = CompanyServiceCrud(session, user)
     company = await company_service.update_company(company_id, data)
