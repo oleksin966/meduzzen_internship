@@ -5,6 +5,7 @@ from routers.health_check import router
 from routers.connect_check import router_connects
 from routers.user_route import router_user
 from routers.auth_route import router_auth
+
 from core.config import settings
 from starlette.middleware.sessions import SessionMiddleware
 

@@ -1,6 +1,6 @@
 from typing import Optional
 from core.config import settings
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jwt import encode, InvalidTokenError
 from fastapi.security import SecurityScopes, HTTPAuthorizationCredentials, HTTPBearer
 from fastapi import  HTTPException, Depends, status
@@ -47,7 +47,7 @@ async def get_current_user(
             )
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )

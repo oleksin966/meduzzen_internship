@@ -2,12 +2,12 @@ from passlib.context import CryptContext
 from sqlalchemy import select, Column
 from core.config import settings
 from db.models import User 
-from jwt import decode
 from core.config import settings
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from jwt import decode, encode, InvalidTokenError
 from pydantic import ValidationError
+from schemas.user_schema import UserEmail
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -34,7 +34,6 @@ def decode_token(token: str):
             settings.SIGNING_KEY,
             algorithms=settings.AUTH0_ALGORITHMS,
         )
-
         return payload_without_auth0
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
@@ -71,5 +70,12 @@ async def get_user_by_field(session: AsyncSession, field: Column, value: str) ->
     query = select(User).where(field == value)
     user = await session.execute(query)
     return user.scalar_one_or_none()
+
+async def get_auth_user(session, email):
+    user_in_db = await get_user_by_field(session, User.email, email)
+    if user_in_db:
+        return user_in_db
+    else:
+        return UserEmail(email=email)
 
 
