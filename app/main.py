@@ -5,6 +5,7 @@ from routers.health_check import router
 from routers.connect_check import router_connects
 from routers.user_route import router_user
 from routers.auth_route import router_auth
+from routers.company_route import router_company
 
 from core.config import settings
 from starlette.middleware.sessions import SessionMiddleware
@@ -37,7 +38,7 @@ app.add_middleware(SessionMiddleware, secret_key="add any string...")
 # app.include_router(router_connects)
 # app.include_router(router_user)
 app.include_router(router_auth)
-
+app.include_router(router_company)
 
 def run():
     if settings.environment == "development":

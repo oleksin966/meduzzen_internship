@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -20,3 +21,15 @@ class User(Base):
     description = Column(String)
     disabled = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
+
+    owned_companies = relationship("Company", back_populates="owner")
+
+class Company(Base):
+    __tablename__ = "companies"
+
+    name = Column(String, nullable=False)
+    description = Column(String)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    visibility = Column(Boolean, default=True)
+
+    owner = relationship("User", back_populates="owned_companies")

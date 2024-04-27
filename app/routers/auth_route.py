@@ -76,14 +76,11 @@ async def edit_me(
     user = await get_auth_user(session, email)
 
     get_data = data.model_dump()
-    if get_data["username"] is not None:
-        user.username = get_data["username"]
-    else:
+    
+    if get_data["username"] is None:
         get_data.pop("username", None)
 
-    if get_data["password"] is not None:
-        get_data["password"] = hash_password(get_data["password"])
-    else:
+    if get_data["password"] is None:
          get_data.pop("password", None)
         
     user_service = UserServiceCrud(session)
