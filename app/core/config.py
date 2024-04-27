@@ -18,6 +18,13 @@ class Settings(BaseSettings):
 
     PROD: str = "INFO"
 
+    AUTH0_DOMAIN: str
+    AUTH0_API_AUDIENCE: str
+    AUTH0_ISSUER: str
+    AUTH0_ALGORITHMS: str
+
+    SIGNING_KEY: str
+
     class Config:
         env_file = ".env"
 

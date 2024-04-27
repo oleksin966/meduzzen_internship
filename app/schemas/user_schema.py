@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
 
 class UserBase(BaseModel):
     pass
@@ -23,6 +24,11 @@ class UserSignUp(UserBase):
     username: str
     password: str
     email: str
+    age: Optional[int] = None
+    description: Optional[str] = None
+
+class UserSignUpEmail(UserBase):
+    email: str
 
 class UserUpdate(UserBase):
     age: Optional[int]
@@ -30,10 +36,24 @@ class UserUpdate(UserBase):
     password: Optional[str]
     username: Optional[str]
 
+class UserEmail(BaseModel):
+    email: str
+
 class UserList(UserBase):
     users: List[UserSchema]
 
 class UserDetail(UserBase):
     user: UserSchema
+
+class TokenSchema(BaseModel):
+    token: str
+    token_type: str
+
+class TokenPayload(BaseModel):
+    sub: str
+    exp: datetime  
+
+    class Config:
+        populate_by_name = True
 
 

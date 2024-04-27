@@ -1,4 +1,3 @@
-
 import logging.config
 from pythonjsonlogger import jsonlogger
 
@@ -21,7 +20,6 @@ LOGGING = {
     },
     "loggers": {"": {"handlers": ["stdout"], "level": "DEBUG"}},
 }
-
 
 logging.config.dictConfig(LOGGING)
 

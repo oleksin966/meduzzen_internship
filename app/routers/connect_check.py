@@ -8,6 +8,8 @@ from db.database import get_async_session
 from db.redis import get_redis_client
 from aioredis import Redis
 
+
+
 from logging import getLogger
 
 logger = getLogger(__name__)
