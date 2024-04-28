@@ -108,3 +108,4 @@ async def delete_me(
     user_service = UserServiceCrud(session)
     delete_user = await user_service.delete_user(user.id)
     return delete_user
+
