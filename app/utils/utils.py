@@ -9,6 +9,7 @@ from jwt import decode, encode, InvalidTokenError
 from pydantic import ValidationError
 from schemas.user_schema import UserEmail
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
