@@ -7,7 +7,7 @@ from utils.utils import verify_password, check_existing_user, get_user_by_field,
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.user_service import UserServiceCrud
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from typing import Union
+from typing import Union, Dict
 
 router_auth = APIRouter()
 auth = VerifyToken()
@@ -65,7 +65,7 @@ async def token(
     ):
     return token # GET TOKEN 
 
-@router_auth.put("/edit/{user_id}", summary="Edit my Profile", response_model=UserSchema)
+@router_auth.patch("/edit/{user_id}", summary="Edit my Profile", response_model=UserSchema)
 async def edit_me(
         user_id: int = Path(..., title="The ID of the user to edit"),
         data: UserEditNamePass = Depends(),
@@ -79,15 +79,10 @@ async def edit_me(
     if user.id != user_id:
         raise HTTPException(status_code=403, detail="You are not authorized to edit this user")
 
-    get_data = data.model_dump()
-    if get_data["username"] is None:
-        get_data.pop("username", None)
-
-    if get_data["password"] is not None:
+    get_data = data.dict(exclude_none=True)
+    if "password" in get_data:
         get_data["password"] = hash_password(get_data["password"])
-    else:
-        get_data.pop("password", None)
-        
+
     user_service = UserServiceCrud(session)
     updated_user = await user_service.update_user(user.id, get_data)
     return updated_user
