@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Security, Body
+from fastapi import APIRouter, Depends, HTTPException, status, Security, Path
 from db.models import User
 from db.database import get_async_session
 from schemas.user_schema import TokenSchema, UserSchema, UserSignUp, UserEmail, UserEditNamePass
@@ -65,8 +65,9 @@ async def token(
     ):
     return token # GET TOKEN 
 
-@router_auth.put("/edit/me", summary="Edit my Profile", response_model=UserSchema)
+@router_auth.put("/edit/{user_id}", summary="Edit my Profile", response_model=UserSchema)
 async def edit_me(
+        user_id: int = Path(..., title="The ID of the user to edit"),
         data: UserEditNamePass = Depends(),
         session: AsyncSession = Depends(get_async_session),
         email: UserEmail = Depends(get_current_user),
@@ -75,29 +76,35 @@ async def edit_me(
     
     user = await get_auth_user(session, email)
 
+    if user.id != user_id:
+        raise HTTPException(status_code=403, detail="You are not authorized to edit this user")
+
     get_data = data.model_dump()
-    if get_data["username"] is not None:
-        user.username = get_data["username"]
-    else:
+    if get_data["username"] is None:
         get_data.pop("username", None)
 
     if get_data["password"] is not None:
         get_data["password"] = hash_password(get_data["password"])
     else:
-         get_data.pop("password", None)
+        get_data.pop("password", None)
         
     user_service = UserServiceCrud(session)
     updated_user = await user_service.update_user(user.id, get_data)
     return updated_user
 
-@router_auth.delete("/delete/me", summary="Delete my Profile", response_model=UserSchema)
+@router_auth.delete("/delete/{user_id}", summary="Delete my Profile", response_model=UserSchema)
 async def delete_me(
+        user_id: int = Path(..., title="The ID of the user to delete"),
         session: AsyncSession = Depends(get_async_session),
         email: UserEmail = Depends(get_current_user),
         token: str = Security(auth.verify),
     ):
     
     user = await get_auth_user(session, email)
+
+    if user.id != user_id:
+        raise HTTPException(status_code=403, detail="You are not authorized to delete this user")
+
     user_service = UserServiceCrud(session)
     delete_user = await user_service.delete_user(user.id)
     return delete_user
