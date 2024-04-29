@@ -1,6 +1,6 @@
 from typing import Optional
 from core.config import settings
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from jwt import encode, InvalidTokenError
 from fastapi.security import SecurityScopes, HTTPAuthorizationCredentials, HTTPBearer
 from fastapi import  HTTPException, Depends, status

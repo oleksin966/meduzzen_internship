@@ -6,7 +6,6 @@ class UserBase(BaseModel):
     pass
 
 class UserSchema(UserBase):
-    id: int
     username: str
     email: str
     password: str
@@ -31,10 +30,13 @@ class UserSignUpEmail(UserBase):
     email: str
 
 class UserUpdate(UserBase):
-    age: Optional[int]
-    description: Optional[str]
-    password: Optional[str]
-    username: Optional[str]
+    age: Optional[int] = None
+    description: Optional[str] = None
+    password: Optional[str] = None
+    username: Optional[str] = None
+
+class UserEmail(BaseModel):
+    email: str
 
 class UserEmail(BaseModel):
     email: str
@@ -44,6 +46,11 @@ class UserList(UserBase):
 
 class UserDetail(UserBase):
     user: UserSchema
+
+class UserEditNamePass(UserBase):
+    username: Optional[str] = None
+    password: Optional[str] = None
+
 
 class TokenSchema(BaseModel):
     token: str
