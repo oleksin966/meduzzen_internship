@@ -20,3 +20,51 @@ class User(Base):
     description = Column(String)
     disabled = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
+
+    owned_companies = relationship("Company", back_populates="owner")
+
+
+
+class Company(Base):
+    __tablename__ = "companies"
+
+    name = Column(String, nullable=False)
+    description = Column(String)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    visibility = Column(Boolean, default=True)
+
+    owner = relationship("User", back_populates="owned_companies")
+
+
+
+class Invitation(Base):
+    __tablename__ = "invitations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    status = Column(String)
+
+    company = relationship("Company", backref="invitations")
+    user = relationship("User", backref="invitations")
+
+class Request(Base):
+    __tablename__ = "requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    status = Column(String)
+
+    company = relationship("Company", backref="requests")
+    user = relationship("User", backref="requests")
+
+class CompanyUser(Base):
+    __tablename__ = "company_users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    company = relationship("Company", back_populates="company_users")
+    user = relationship("User", back_populates="company_users")
