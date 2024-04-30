@@ -1,6 +1,6 @@
-from schemas.user_schema import UserSchema,UserSignUp,UserUpdate,UserDetail,UserList
+from schemas.user_schema import UserSchema,UserSignUp,UserUpdate,UserDetail,UserList,UserEditNamePass
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path
 
 from db.models import User
 from db.database import get_async_session
@@ -8,9 +8,11 @@ from db.database import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.user_service import UserServiceCrud
 
-router_user = APIRouter()
+from utils.auth import get_current_user
 
-@router_user.get('/users/list/', response_model=List[UserSchema])
+router_user = APIRouter(prefix="/user")
+
+@router_user.get('/all', summary="Get all Users", response_model=List[UserSchema])
 async def users_list(
         page: int,
         session: AsyncSession = Depends(get_async_session)
@@ -18,7 +20,7 @@ async def users_list(
     user_service = UserServiceCrud(session)
     return await user_service.get_all_users(page)
 
-@router_user.get('/users/{user_id}', response_model=UserSchema)
+@router_user.get('/{user_id}', summary="Get User by ID", response_model=UserSchema)
 async def get_user(
         user_id: int, 
         session: AsyncSession = Depends(get_async_session)
@@ -29,7 +31,7 @@ async def get_user(
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@router_user.post('/create/', response_model=UserSchema)
+@router_user.post('/create/', summary="Create", response_model=UserSchema)
 async def create_user_route(
         user: UserSignUp = Depends(UserSchema), 
         session: AsyncSession = Depends(get_async_session)
@@ -37,7 +39,7 @@ async def create_user_route(
     user_service = UserServiceCrud(session)
     return await user_service.create_user(user)
 
-@router_user.put('/update/', response_model=UserUpdate)
+@router_user.put('/update/', summary="Update User", response_model=UserUpdate)
 async def update_user_route(
         user_id: int, 
         data: UserUpdate, 
@@ -60,6 +62,41 @@ async def delete_user_route(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+
+@router_user.put("/edit/{user_id}", summary="Edit my Profile", response_model=UserSchema)
+async def edit_me(
+        user_id: int = Path(..., title="The ID of the user to edit"),
+        data: UserEditNamePass = Depends(),
+        session: AsyncSession = Depends(get_async_session),
+        user: UserSchema = Depends(get_current_user),
+    ):
+
+    if user.id != user_id:
+        raise HTTPException(status_code=403, detail="You are not authorized to edit this user")
+
+    get_data = data.dict(exclude_none=True)
+    if "password" in get_data:
+        get_data["password"] = hash_password(get_data["password"])
+        
+    user_service = UserServiceCrud(session)
+    updated_user = await user_service.update_user(user.id, get_data)
+    return updated_user
+
+@router_user.delete("/delete/{user_id}", summary="Delete my Profile", response_model=UserSchema)
+async def delete_me(
+        user_id: int = Path(..., title="The ID of the user to delete"),
+        session: AsyncSession = Depends(get_async_session),
+        user: UserSchema = Depends(get_current_user),
+    ):
+
+    if user.id != user_id:
+        raise HTTPException(status_code=403, detail="You are not authorized to delete this user")
+
+    user_service = UserServiceCrud(session)
+    delete_user = await user_service.delete_user(user.id)
+    return delete_user
 
 ### TESTING USERS SCHEMAS ###
 

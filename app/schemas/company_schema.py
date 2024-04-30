@@ -2,7 +2,8 @@ from pydantic import BaseModel
 from typing import Optional
 
 class CompanyBase(BaseModel):
-    pass
+	name: str
+	description: str
 
 class CompanyCreate(CompanyBase):
 	name: str
