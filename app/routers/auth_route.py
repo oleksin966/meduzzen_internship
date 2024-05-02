@@ -61,36 +61,3 @@ async def token(
         payload: dict = Depends(get_token_payload)
     ):
     return payload
-
-@router_auth.put("/edit/{user_id}", summary="Edit my Profile", response_model=UserSchema)
-async def edit_me(
-        user_id: int = Path(..., title="The ID of the user to edit"),
-        data: UserEditNamePass = Depends(),
-        session: AsyncSession = Depends(get_async_session),
-        user: UserSchema = Depends(get_current_user),
-    ):
-
-    if user.id != user_id:
-        raise HTTPException(status_code=403, detail="You are not authorized to edit this user")
-
-    get_data = data.dict(exclude_none=True)
-    if "password" in get_data:
-        get_data["password"] = hash_password(get_data["password"])
-        
-    user_service = UserServiceCrud(session)
-    updated_user = await user_service.update_user(user.id, get_data)
-    return updated_user
-
-@router_auth.delete("/delete/{user_id}", summary="Delete my Profile", response_model=UserSchema)
-async def delete_me(
-        user_id: int = Path(..., title="The ID of the user to delete"),
-        session: AsyncSession = Depends(get_async_session),
-        user: UserSchema = Depends(get_current_user),
-    ):
-
-    if user.id != user_id:
-        raise HTTPException(status_code=403, detail="You are not authorized to delete this user")
-
-    user_service = UserServiceCrud(session)
-    delete_user = await user_service.delete_user(user.id)
-    return delete_user

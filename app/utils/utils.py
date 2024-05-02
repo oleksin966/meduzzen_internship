@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 from sqlalchemy import select, Column
 from core.config import settings
-from db.models import User 
+from db.models import User, Company
 from core.config import settings
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -79,4 +79,17 @@ async def get_auth_user(session, email):
     else:
         return UserEmail(email=email)
 
+async def get_company_by_id(session: AsyncSession, company_id: int, owner_id: int = None):
+    if owner_id is not None:
+        statement = select(Company).where(owner_id == Company.owner_id).where(company_id == Company.id)
+    statement = select(Company).where(Company.id == company_id)
+    company = await session.execute(statement)
+    return company.scalar_one_or_none()
 
+async def get_user_by_id(session: AsyncSession, user_id: int):
+    user = await session.execute(select(User).where(User.id == user_id))
+    return user.scalar_one_or_none()
+
+async def get_owned_company(session: AsyncSession, user_id: int):
+    companies = await session.execute(select(Company).where(Company.owner_id == user_id))
+    return companies.scalars().fetchall()
