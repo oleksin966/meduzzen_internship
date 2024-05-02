@@ -20,9 +20,8 @@ class CompanyServiceCrud:
 
 	@exception_handler
 	async def get_all_companies(self, page: int) -> List[CompanySchema]:
-		statement = select(self.model) \
-					.where(self.model.owner_id == self.user.id)
-		paginator = Paginate(self.session, statement, page)
+		filterr = self.model.owner_id == self.user.id
+		paginator = Paginate(self.session, self.model, page, filterr)
 		paginate_company = await paginator.fetch_results()
 		return paginate_company
 

@@ -44,9 +44,10 @@ def decode_token(token: str):
         )
 
 class Paginate:
-    def __init__(self, db: None, statement: None, page: int | None = None):
+    def __init__(self, db: AsyncSession, model: type, page: int, filterr: None = None):
         self.db = db
-        self.statement = statement
+        self.model = model
+        self.filterr = filterr
         self.page = page
         self.COUNT = 3
 
@@ -57,7 +58,11 @@ class Paginate:
         offset = (self.page - 1) * self.COUNT
         limit = self.COUNT
 
-        statement = self.statement.offset(offset).limit(limit)
+        statement = select(self.model)
+        if self.filterr is not None:
+            statement = statement.where(self.filterr)
+        
+        statement = statement.offset(offset).limit(limit)
         result = await self.db.execute(statement)
         return result.scalars().all()
 

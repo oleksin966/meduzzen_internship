@@ -14,8 +14,8 @@ class UserServiceCrud:
 
 	@exception_handler
 	async def get_all_users(self, page: int) -> List[User]:
-		statement = select(self.model)
-		paginator = Paginate(self.session, statement, page)
+		# statement = select(self.model)
+		paginator = Paginate(self.session, self.model, page)
 		paginate_users = await paginator.fetch_results()
 		return paginate_users
 
