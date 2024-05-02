@@ -38,6 +38,9 @@ class UserUpdate(UserBase):
 class UserEmail(BaseModel):
     email: str
 
+class UserEmail(BaseModel):
+    email: str
+
 class UserList(UserBase):
     users: List[UserSchema]
 

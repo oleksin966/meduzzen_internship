@@ -7,7 +7,7 @@ from utils.utils import verify_password, check_existing_user, get_user_by_field,
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.user_service import UserServiceCrud
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from typing import Union
+from typing import Union, Dict
 
 router_auth = APIRouter(prefix="/auth")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
