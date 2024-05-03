@@ -9,6 +9,7 @@ from jwt import decode, encode, InvalidTokenError
 from pydantic import ValidationError
 from schemas.user_schema import UserEmail
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str) -> str:
@@ -43,9 +44,10 @@ def decode_token(token: str):
         )
 
 class Paginate:
-    def __init__(self, db: None, model: None, page: int | None = None):
+    def __init__(self, db: AsyncSession, model: type, page: int, filterr: None = None):
         self.db = db
         self.model = model
+        self.filterr = filterr
         self.page = page
         self.COUNT = 3
 
@@ -56,7 +58,11 @@ class Paginate:
         offset = (self.page - 1) * self.COUNT
         limit = self.COUNT
 
-        statement = select(self.model).offset(offset).limit(limit)
+        statement = select(self.model)
+        if self.filterr is not None:
+            statement = statement.where(self.filterr)
+        
+        statement = statement.offset(offset).limit(limit)
         result = await self.db.execute(statement)
         return result.scalars().all()
 
