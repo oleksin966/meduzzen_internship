@@ -29,6 +29,10 @@ class UserSignUp(UserBase):
 class UserSignUpEmail(UserBase):
     email: str
 
+class UserUsername(UserBase):
+    id: int
+    username: str
+
 class UserUpdate(UserBase):
     age: Optional[int] = None
     description: Optional[str] = None

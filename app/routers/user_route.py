@@ -9,7 +9,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.user_service import UserServiceCrud
 
 from utils.auth import get_current_user
-
 router_user = APIRouter(prefix="/user")
 
 @router_user.get('/all', summary="Get all Users", response_model=List[UserSchema])
@@ -62,8 +61,6 @@ async def delete_user_route(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
-
-
 
 @router_user.put("/edit/{user_id}", summary="Edit my Profile", response_model=UserSchema)
 async def edit_me(

@@ -3,7 +3,6 @@ from db.database import get_async_session
 from schemas.user_schema import UserEmail, UserId
 from schemas.company_schema import CompanySchema, CompanyCreate, CompanyUpdate
 from utils.auth import get_current_user
-from utils.utils import get_auth_user
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.company_service import CompanyServiceCrud
 from typing import List
@@ -12,7 +11,7 @@ router_company = APIRouter(prefix="/company")
 
 @router_company.get('/all', summary="Get all Companies", response_model=List[CompanySchema])
 async def get_all_companies(
-		page: int = 1,
+		    page: int = 1,
         session: AsyncSession = Depends(get_async_session),
         user: UserId = Depends(get_current_user),
     ):
@@ -21,7 +20,7 @@ async def get_all_companies(
 
 @router_company.get('/{company_id}', summary="Get Company by ID", response_model=CompanySchema)
 async def get_company_by_id(
-		company_id: int = Path(..., title="Get company by ID"),
+		    company_id: int = Path(..., title="Get company by ID"),
         session: AsyncSession = Depends(get_async_session),
         user: UserId = Depends(get_current_user),
     ):
@@ -44,6 +43,7 @@ async def create_company(
     company_service = CompanyServiceCrud(session, user)
     return await company_service.create_company(company)
 
+
 @router_company.put('/edit/{company_id}', summary="Edit info Company", response_model=CompanySchema)
 async def update_company(
         company_update: CompanyUpdate,
@@ -61,6 +61,7 @@ async def update_company(
             detail="Company with this ID doesnt exsit"
         )
     return company
+
 
 
 @router_company.delete('/delete/{company_id}', summary="Delete Company", response_model=CompanySchema)
