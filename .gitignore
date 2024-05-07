@@ -8,3 +8,5 @@ test.txt
 .postgres
 
 *.log
+
+alembic/versions

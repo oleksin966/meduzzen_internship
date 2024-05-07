@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -22,7 +23,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     owned_companies = relationship("Company", back_populates="owner")
-
+    company_users = relationship("CompanyUser", back_populates="user")  
 
 
 class Company(Base):
@@ -34,37 +35,34 @@ class Company(Base):
     visibility = Column(Boolean, default=True)
 
     owner = relationship("User", back_populates="owned_companies")
-
+    company_users = relationship("CompanyUser", back_populates="company")  # Updated line
 
 
 class Invitation(Base):
     __tablename__ = "invitations"
 
-    id = Column(Integer, primary_key=True, index=True)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    status = Column(String)
 
     company = relationship("Company", backref="invitations")
-    user = relationship("User", backref="invitations")
+    user = relationship("User", foreign_keys=[user_id], backref="invitations")
 
 class Request(Base):
     __tablename__ = "requests"
 
-    id = Column(Integer, primary_key=True, index=True)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    status = Column(String)
 
     company = relationship("Company", backref="requests")
-    user = relationship("User", backref="requests")
+    user = relationship("User", foreign_keys=[user_id], backref="requests")
+
 
 class CompanyUser(Base):
     __tablename__ = "company_users"
 
-    id = Column(Integer, primary_key=True, index=True)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     company = relationship("Company", back_populates="company_users")
     user = relationship("User", back_populates="company_users")
+

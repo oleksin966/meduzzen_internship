@@ -22,7 +22,6 @@ class Settings(BaseSettings):
     AUTH0_API_AUDIENCE: str
     AUTH0_ISSUER: str
     AUTH0_ALGORITHMS: str
-
     SIGNING_KEY: str
 
     class Config:
