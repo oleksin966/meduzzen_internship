@@ -18,6 +18,9 @@ from logging import getLogger
 
 logger = getLogger(__name__)
 
+def get_project_root():
+    return Path(__file__).parent
+
 app = FastAPI()
 
 origins = [
@@ -35,7 +38,7 @@ app.add_middleware(SessionMiddleware, secret_key="add any string...")
 
 
 
-# app.include_router(router)
+#app.include_router(router)
 # app.include_router(router_connects)
 # app.include_router(router_user)
 app.include_router(router_auth)

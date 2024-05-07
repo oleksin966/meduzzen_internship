@@ -3,7 +3,6 @@ from db.database import get_async_session
 from schemas.user_schema import UserEmail, UserId
 from schemas.company_schema import CompanySchema, CompanyCreate, CompanyUpdate
 from utils.auth import get_current_user
-from utils.utils import get_auth_user
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.company_service import CompanyServiceCrud
 from typing import List

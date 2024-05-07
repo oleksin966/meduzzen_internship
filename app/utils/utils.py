@@ -44,10 +44,12 @@ def decode_token(token: str):
         )
 
 class Paginate:
-    def __init__(self, db: None, statement: None, page: int | None = None):
+    def __init__(self, db: AsyncSession, model: type, page: int, options=None, where=None):
         self.db = db
-        self.statement = statement
+        self.model = model
         self.page = page
+        self.options = options
+        self.where = where
         self.COUNT = 3
 
     async def fetch_results(self):
@@ -57,10 +59,16 @@ class Paginate:
         offset = (self.page - 1) * self.COUNT
         limit = self.COUNT
 
-        statement = self.statement.offset(offset).limit(limit)
+        statement = select(self.model)
+
+        if self.options is not None:
+            statement = statement.options(*self.options)
+        if self.where is not None:
+            statement = statement.where(self.where)
+        
+        statement = statement.offset(offset).limit(limit)
         result = await self.db.execute(statement)
         return result.scalars().all()
-
 
 async def check_existing_user(session, field, value):
     existing_user = await session.execute(select(User).where(field == value))
@@ -78,18 +86,3 @@ async def get_auth_user(session, email):
         return user_in_db
     else:
         return UserEmail(email=email)
-
-async def get_company_by_id(session: AsyncSession, company_id: int, owner_id: int = None):
-    if owner_id is not None:
-        statement = select(Company).where(owner_id == Company.owner_id).where(company_id == Company.id)
-    statement = select(Company).where(Company.id == company_id)
-    company = await session.execute(statement)
-    return company.scalar_one_or_none()
-
-async def get_user_by_id(session: AsyncSession, user_id: int):
-    user = await session.execute(select(User).where(User.id == user_id))
-    return user.scalar_one_or_none()
-
-async def get_owned_company(session: AsyncSession, user_id: int):
-    companies = await session.execute(select(Company).where(Company.owner_id == user_id))
-    return companies.scalars().fetchall()

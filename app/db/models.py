@@ -42,8 +42,6 @@ class Invitation(Base):
 
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    status = Column(String)
 
     company = relationship("Company", backref="invitations")
     user = relationship("User", foreign_keys=[user_id], backref="invitations")
@@ -52,11 +50,10 @@ class Request(Base):
     __tablename__ = "requests"
 
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
-    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    status = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     company = relationship("Company", backref="requests")
-    user = relationship("User", foreign_keys=[owner_id], backref="requests")
+    user = relationship("User", foreign_keys=[user_id], backref="requests")
 
 class CompanyUser(Base):
     __tablename__ = "company_users"
