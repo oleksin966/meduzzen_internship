@@ -1,4 +1,4 @@
-from schemas.user_schema import UserSchema,UserSignUp,UserUpdate,UserDetail,UserList, UserEditNamePass
+from schemas.user_schema import UserSchema,UserSignUp,UserUpdate,UserDetail,UserList,UserEditNamePass
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Path
 
@@ -9,10 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.user_service import UserServiceCrud
 
 from utils.auth import get_current_user
+router_user = APIRouter(prefix="/user")
 
-router_user = APIRouter()
-
-@router_user.get('/users/list/', response_model=List[UserSchema])
+@router_user.get('/all', summary="Get all Users", response_model=List[UserSchema])
 async def users_list(
         page: int,
         session: AsyncSession = Depends(get_async_session)
@@ -20,7 +19,7 @@ async def users_list(
     user_service = UserServiceCrud(session)
     return await user_service.get_all_users(page)
 
-@router_user.get('/users/{user_id}', response_model=UserSchema)
+@router_user.get('/{user_id}', summary="Get User by ID", response_model=UserSchema)
 async def get_user(
         user_id: int, 
         session: AsyncSession = Depends(get_async_session)
@@ -31,7 +30,7 @@ async def get_user(
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@router_user.post('/create/', response_model=UserSchema)
+@router_user.post('/create/', summary="Create", response_model=UserSchema)
 async def create_user_route(
         user: UserSignUp = Depends(UserSchema), 
         session: AsyncSession = Depends(get_async_session)
@@ -39,7 +38,7 @@ async def create_user_route(
     user_service = UserServiceCrud(session)
     return await user_service.create_user(user)
 
-@router_user.put('/update/', response_model=UserUpdate)
+@router_user.put('/update/', summary="Update User", response_model=UserUpdate)
 async def update_user_route(
         user_id: int, 
         data: UserUpdate, 

@@ -26,6 +26,7 @@ class User(Base):
     company_users = relationship("CompanyUser", back_populates="user")  
 
 
+
 class Company(Base):
     __tablename__ = "companies"
 
@@ -33,6 +34,7 @@ class Company(Base):
     description = Column(String)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     visibility = Column(Boolean, default=True)
+
 
     owner = relationship("User", back_populates="owned_companies")
     company_users = relationship("CompanyUser", back_populates="company")  # Updated line
@@ -65,4 +67,5 @@ class CompanyUser(Base):
 
     company = relationship("Company", back_populates="company_users")
     user = relationship("User", back_populates="company_users")
+
 

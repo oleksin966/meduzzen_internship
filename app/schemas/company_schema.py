@@ -63,3 +63,4 @@ class LeaveCompany(CompanyActionSchema):
 
 class CompanyUsers(BaseModel):
     user: UserSchema
+

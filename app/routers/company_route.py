@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Security
+from fastapi import APIRouter, Depends, HTTPException, status, Security, Path
 from db.database import get_async_session
 from schemas.user_schema import UserEmail, UserId
 from schemas.company_schema import CompanySchema, CompanyCreate, CompanyUpdate
@@ -11,7 +11,7 @@ router_company = APIRouter(prefix="/company")
 
 @router_company.get('/all', summary="Get all Companies", response_model=List[CompanySchema])
 async def get_all_companies(
-		page: int,
+		    page: int = 1,
         session: AsyncSession = Depends(get_async_session),
         user: UserId = Depends(get_current_user),
     ):
@@ -20,7 +20,7 @@ async def get_all_companies(
 
 @router_company.get('/{company_id}', summary="Get Company by ID", response_model=CompanySchema)
 async def get_company_by_id(
-		company_id: int,
+		    company_id: int = Path(..., title="Get company by ID"),
         session: AsyncSession = Depends(get_async_session),
         user: UserId = Depends(get_current_user),
     ):
@@ -43,10 +43,11 @@ async def create_company(
     company_service = CompanyServiceCrud(session, user)
     return await company_service.create_company(company)
 
-@router_company.put('/edit', summary="Edit info Company", response_model=CompanySchema)
+
+@router_company.put('/edit/{company_id}', summary="Edit info Company", response_model=CompanySchema)
 async def update_company(
-        company_id: int,
         company_update: CompanyUpdate,
+        company_id: int = Path(..., title="The ID of the company to update"),
         session: AsyncSession = Depends(get_async_session),
         user: UserId = Depends(get_current_user),
     ):
@@ -62,9 +63,10 @@ async def update_company(
     return company
 
 
-@router_company.delete('/delete', summary="Delete Company", response_model=CompanySchema)
+
+@router_company.delete('/delete/{company_id}', summary="Delete Company", response_model=CompanySchema)
 async def delete_company(
-        company_id: int,
+        company_id: int = Path(..., title="The ID of the company to delete"),
         session: AsyncSession = Depends(get_async_session),
         user: UserId = Depends(get_current_user),
     ):

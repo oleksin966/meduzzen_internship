@@ -62,6 +62,7 @@ class CompanyServiceCrud:
             .values(**data)
             .returning(self.model)
         )
+
         updating = await self.session.execute(statement)
         updated_user = updating.scalar_one()
         
