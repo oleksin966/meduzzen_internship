@@ -4,7 +4,7 @@ from sqlalchemy.orm import joinedload
 from db.models import User, Company, Invitation, Request, CompanyUser
 from typing import List, Dict
 from fastapi import Depends, HTTPException
-from schemas.company_schema import CompanySchema
+from schemas.company_schema import CompanySchema, RemoveAdmin, UserIsNotAdmin
 from schemas.user_schema import UserId
 from utils.utils import Paginate
 from utils.decorators import exception_handler
@@ -95,6 +95,78 @@ class CompanyActions:
         self.auth_user = user
 
 
+
+
+
+    # admin processing
+    async def add_admin(self, user_id, company_id):
+        '''Владалец должен иметь возможность добавлять администраторов в свою компанию'''
+
+        company = await self.session.get(Company, company_id)
+        if self.auth_user.id != company.owner_id: 
+            raise NotOwnerCompanyException()
+
+        statement = select(CompanyUser) \
+        .options(joinedload(CompanyUser.company),joinedload(CompanyUser.user)) \
+        .where((CompanyUser.user_id == user_id) & (CompanyUser.company_id == company_id))
+        user_in_company = await self.session.execute(statement)
+        user_in_company = user_in_company.scalar_one_or_none()
+        if user_in_company is None:
+            raise UserNotFoundException()
+
+
+        # If the checks pass, increase user to administrator
+        user_in_company.is_administrator = True
+        await self.session.commit()
+
+        return user_in_company
+
+    async def remove_admin(self, user_id, company_id):
+        '''Владалец должен иметь возможность добавлять администраторов в свою компанию'''
+
+        company = await self.session.get(Company, company_id)
+        if self.auth_user.id != company.owner_id: 
+            raise NotOwnerCompanyException()
+
+        statement = select(CompanyUser) \
+        .options(joinedload(CompanyUser.company),joinedload(CompanyUser.user)) \
+        .where((CompanyUser.user_id == user_id) & (CompanyUser.company_id == company_id))
+        user_in_company = await self.session.execute(statement)
+        user_in_company = user_in_company.scalar_one_or_none()
+        if user_in_company is None:
+            raise UserNotFoundException()
+
+
+        # If the checks pass, increase user to administrator
+        if user_in_company.is_administrator == True:
+            user_in_company.is_administrator = False
+            await self.session.commit()
+            return user_in_company
+        else:
+            return UserIsNotAdmin(message="User is not admin")
+
+    async def list_admins(self, page, company_id):
+        '''Реализовать ендпоинт с помощью которого можно увидеть список 
+        администраторов в компании'''
+
+        company = await self.session.get(Company, company_id)
+        if company_id != company.id: 
+            raise CompanyNotFoundException()
+
+        options = [joinedload(CompanyUser.company), joinedload(CompanyUser.user)]
+        where = (CompanyUser.company_id == company_id) & (CompanyUser.is_administrator == True)
+        
+        paginator = Paginate(self.session, CompanyUser, page, options=options, where=where)
+        paginate_admins = await paginator.fetch_results()
+        return paginate_admins
+
+
+
+
+
+
+
+    # owner action
     async def send_invitation(self, user_id, company_id):
         '''Владелец должен иметь возможность отправить приглашение в свою 
         компанию неограниченное количество других пользователей'''
