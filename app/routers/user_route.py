@@ -13,7 +13,7 @@ router_user = APIRouter(prefix="/user")
 
 @router_user.get('/all', summary="Get all Users", response_model=List[UserSchema])
 async def users_list(
-        page: int,
+        page: int = 1,
         session: AsyncSession = Depends(get_async_session)
     ):
     user_service = UserServiceCrud(session)

@@ -64,6 +64,7 @@ class CompanyUser(Base):
 
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    is_administrator = Column(Boolean, default=False)
 
     company = relationship("Company", back_populates="company_users")
     user = relationship("User", back_populates="company_users")

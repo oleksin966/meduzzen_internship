@@ -47,7 +47,6 @@ class Paginate:
     def __init__(self, db: AsyncSession, model: type, page: int, options=None, where=None):
         self.db = db
         self.model = model
-        self.filterr = filterr
         self.page = page
         self.options = options
         self.where = where

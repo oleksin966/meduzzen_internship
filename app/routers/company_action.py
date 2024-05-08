@@ -13,7 +13,10 @@ from schemas.company_schema import (CompanyUsers,
     Requestreject, 
     CompanyActionSchema, 
     InvitationSent, 
-    InvitationCancel)
+    InvitationCancel,
+    AddAdmin,
+    RemoveAdmin,
+    UserIsNotAdmin)
 from utils.auth import get_current_user
 from utils.exceptions import (UserNotFoundException, 
     InvitationOwnershipException, 
@@ -27,9 +30,60 @@ from utils.exceptions import (UserNotFoundException,
     InvitationAlreadySentException)
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.company_service import CompanyActions
-from typing import List
+from typing import List, Union
 
 router_company_action = APIRouter(prefix="/action")
+
+
+
+
+
+# admin process
+@router_company_action.patch('/add_admin/{user_id}', summary="Owner add admin to company", response_model=AddAdmin)
+async def add_admin(
+        company_id: int,
+        user_id: int = Path(..., title="The ID of user's"),
+        session: AsyncSession = Depends(get_async_session),
+        user: UserId = Depends(get_current_user)
+    ):
+    '''Владалец должен иметь возможность добавлять администраторов в свою компанию'''
+    try:
+        company_actions = CompanyActions(session, user)
+        return await company_actions.add_admin(user_id, company_id)
+    except UserNotFoundException:
+        raise HTTPException(status_code=404, detail="User doesnt exist in your company.")
+    except NotOwnerCompanyException:
+        raise HTTPException(status_code=403, detail="You are not the owner of this company.")
+
+@router_company_action.patch('/remove_admin/{user_id}', summary="Owner remove admin from company", response_model=Union[RemoveAdmin, UserIsNotAdmin])
+async def remove_admin(
+        company_id: int,
+        user_id: int = Path(..., title="The ID of admin's"),
+        session: AsyncSession = Depends(get_async_session),
+        user: UserId = Depends(get_current_user)
+    ):
+    '''Владалец должен иметь возможность разжаловать администратора в компании'''
+    try:
+        company_actions = CompanyActions(session, user)
+        return await company_actions.remove_admin(user_id, company_id)
+    except UserNotFoundException:
+        raise HTTPException(status_code=404, detail="User doesnt exist in your company.")
+    except NotOwnerCompanyException:
+        raise HTTPException(status_code=403, detail="You are not the owner of this company.")
+
+@router_company_action.get('/admins/{company_id}', summary="Admins in company", response_model=List[CompanyUsers])
+async def list_admins(
+        page: int = 1,
+        company_id: int = Path(..., title="The ID of company"),
+        session: AsyncSession = Depends(get_async_session),
+        user: UserId = Depends(get_current_user)  
+    ):
+    '''Eндпоинт с помощью которого можно увидеть список админов в компании'''
+    try:
+        company_actions = CompanyActions(session, user)
+        return await company_actions.list_admins(page, company_id)
+    except CompanyNotFoundException:
+        raise HTTPException(status_code=404, detail="Company not found")
 
 
 

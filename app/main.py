@@ -42,6 +42,7 @@ app.add_middleware(SessionMiddleware, secret_key="add any string...")
 #app.include_router(router)
 # app.include_router(router_connects)
 app.include_router(router_auth)
+#app.include_router(router_user)
 app.include_router(router_company_action)
 #app.include_router(router_company)
 
@@ -55,4 +56,3 @@ def run():
         
 if __name__ == "__main__":
     run()
-

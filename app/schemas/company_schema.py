@@ -29,6 +29,18 @@ class CompanyActionSchema(BaseModel):
     user: UserUsername 
     company: CompanyName
 
+
+class AddAdmin(CompanyActionSchema):
+    message: str = "User added as admin successfully."
+
+class RemoveAdmin(CompanyActionSchema):
+    message: str = "Admin rights removed successfully."
+
+class UserIsNotAdmin(BaseModel):
+    message: str
+
+
+
 class InvitationSent(CompanyActionSchema):
     message: str = "Invitation sent succesfully."
 
