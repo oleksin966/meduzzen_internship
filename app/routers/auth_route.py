@@ -10,7 +10,7 @@ from services.user_service import UserServiceCrud
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from typing import Union
 
-router_auth = APIRouter(prefix="/auth")
+router_auth = APIRouter(prefix="/auth", tags=["Authorization"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 

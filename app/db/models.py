@@ -69,4 +69,35 @@ class CompanyUser(Base):
     company = relationship("Company", back_populates="company_users")
     user = relationship("User", back_populates="company_users")
 
+# quizzes
+class Quiz(Base):
+    __tablename__ = "quizzes"
+
+    title = Column(String, nullable=False)
+    description = Column(String)
+    frequency_days = Column(Integer)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+
+    company = relationship("Company", backref="quizzes")
+    questions = relationship("Question", back_populates="quiz")
+    
+
+class Question(Base):
+    __tablename__ = "questions"
+
+    question_text = Column(String, nullable=False)
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=False)
+
+    quiz = relationship("Quiz", back_populates="questions")
+    options = relationship("Answer", back_populates="question")
+
+
+class Answer(Base):
+    __tablename__ = "answers"
+
+    answer_text = Column(String, nullable=False)
+    is_correct = Column(Boolean, default=False)
+    question_id = Column(Integer, ForeignKey("questions.id"), nullable=False)
+
+    question = relationship("Question", back_populates="options")
 

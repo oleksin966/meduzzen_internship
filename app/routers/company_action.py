@@ -32,7 +32,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.company_service import CompanyActions
 from typing import List, Union
 
-router_company_action = APIRouter(prefix="/action")
+router_company_action = APIRouter(prefix="/action", tags=["Company Actions"])
 
 
 
