@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
 
 DeclarativeBase = declarative_base()
 
@@ -100,4 +101,22 @@ class Answer(Base):
     question_id = Column(Integer, ForeignKey("questions.id"), nullable=False)
 
     question = relationship("Question", back_populates="options")
+
+
+class QuizResult(Base):
+    __tablename__ = "quiz_results"
+
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=False)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    score = Column(Integer, nullable=False)
+    timestamp = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    user = relationship("User", backref="quiz_results")
+    quiz = relationship("Quiz", backref="quiz_results")
+    company = relationship("Company", backref="quiz_results")
+
+
+class Rating(Base):
+    __tablename__ = "rating"
 

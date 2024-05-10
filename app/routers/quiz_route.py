@@ -8,7 +8,9 @@ from schemas.quiz_schema import (QuizBase,
     QuizUpdate, 
     QuestionSchema, 
     QuestionUpdate,
-    AnswerUpdate)
+    AnswerUpdate,
+    QuestionBase,
+    QuizSchema)
 from services.quiz_service import QuizService
 from utils.exceptions import (QuizNotFound, 
     NotPermission, 
@@ -26,7 +28,7 @@ router_quiz = APIRouter(prefix="/quiz", tags=["Quizzes"])
 
 
 # GET QUIZZES
-@router_quiz.get('/all', summary="Get all quizzes", response_model=List[QuizBase])
+@router_quiz.get('/all', summary="Get all quizzes", response_model=List[QuizSchema])
 async def all_quizzes(
     page: int = 1,
     session: AsyncSession = Depends(get_async_session),
@@ -36,7 +38,7 @@ async def all_quizzes(
     return await quiz_service.all_quizzes(page)
 
 
-@router_quiz.get('/{company_id}', summary="Get quizzes by company", response_model=List[QuizBase])
+@router_quiz.get('/{company_id}', summary="Get quizzes by company", response_model=List[QuizSchema])
 async def get_quizzes(
     page: int = 1,
     company_id: int = Path(..., title="The ID of company"),
@@ -55,7 +57,7 @@ async def get_quizzes(
 
 
 # QUIZZES
-@router_quiz.post('/create/{company_id}', summary="Create quiz", response_model=QuizBase)
+@router_quiz.post('/create/{company_id}', summary="Create quiz", response_model=QuizSchema)
 async def create_quiz(
     quiz: QuizBase = Depends(),
     company_id: int = Path(..., title="The ID of company"),
@@ -70,7 +72,7 @@ async def create_quiz(
     except NotPermission:
         raise HTTPException(status_code=403, detail="You do not have permission to create this quiz")
 
-@router_quiz.put('/update/{quiz_id}', summary="Update quiz", response_model=QuizUpdate)
+@router_quiz.put('/update/{quiz_id}', summary="Update quiz", response_model=QuizSchema)
 async def update_quiz(
     quiz: QuizUpdate = Depends(),
     quiz_id: int = Path(..., title="The ID of quiz"),
@@ -108,7 +110,7 @@ async def delete_quiz(
 # QUESTIONS
 @router_quiz.post('/question/{quiz_id}', summary="Create question", response_model=QuestionSchema)
 async def create_question(
-    question: QuestionSchema = Depends(),
+    question: QuestionBase = Depends(),
     quiz_id: int = Path(..., title="The ID of question"),
     session: AsyncSession = Depends(get_async_session),
     user: UserId = Depends(get_current_user)

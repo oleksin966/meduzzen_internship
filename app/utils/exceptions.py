@@ -83,3 +83,9 @@ class ValuesError(Exception):
 class HasAlreadyAnswers(Exception):
     def __init__(self):
         super().__init__("This question have already answers.")
+
+class QuizNotBelongsToCompany(Exception):
+    def __init__(self):
+        super().__init__("This Quiz dont belong to this company.")
+
+
