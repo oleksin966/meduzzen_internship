@@ -7,6 +7,7 @@ from routers.user_route import router_user
 from routers.auth_route import router_auth
 from routers.company_route import router_company
 from routers.company_action import router_company_action
+from routers.quiz_route import router_quiz
 
 
 from core.config import settings
@@ -43,8 +44,9 @@ app.add_middleware(SessionMiddleware, secret_key="add any string...")
 # app.include_router(router_connects)
 app.include_router(router_auth)
 #app.include_router(router_user)
-app.include_router(router_company_action)
+#app.include_router(router_company_action)
 #app.include_router(router_company)
+app.include_router(router_quiz)
 
 
 def run():

@@ -26,6 +26,11 @@ class NotOwnerCompanyException(Exception):
     def __init__(self):
         super().__init__("You are not the owner of this company")
 
+class NotPermission(Exception):
+    def __init__(self):
+        super().__init__("You do not have permission to add questions to this quiz.")
+
+
 
 
 class InvitationOwnershipException(Exception):
@@ -43,6 +48,7 @@ class InvitationNotFoundException(Exception):
 
 
 
+
 class RequestNotFoundException(Exception):
     def __init__(self):
         super().__init__("Request not found.")
@@ -55,3 +61,25 @@ class RequestOwnershipException(Exception):
     def __init__(self):
         super().__init__("This request not your.")
 
+
+
+
+class QuizNotFound(Exception):
+    def __init__(self):
+        super().__init__("Quiz not found.")
+
+class QuestionNotFound(Exception):
+    def __init__(self):
+        super().__init__("Question not found.")
+
+class AnswerNotFound(Exception):
+    def __init__(self):
+        super().__init__("Answer not found.")
+
+class ValuesError(Exception):
+    def __init__(self):
+        super().__init__("Values Error.")
+
+class HasAlreadyAnswers(Exception):
+    def __init__(self):
+        super().__init__("This question have already answers.")
