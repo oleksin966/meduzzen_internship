@@ -4,14 +4,15 @@ from db.database import get_async_session
 from utils.auth import get_current_user
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.user_schema import UserId
-from schemas.quiz_schema import FullQuiz, AnswersBase, SendQuizResult, QuizResult
+from schemas.quiz_schema import FullQuiz, AnswersBase, SendQuizResult, QuizResult, QuizScore
 from utils.exceptions import (QuizNotFound, 
     QuizNotBelongsToCompany, 
-    CompanyNotFoundException)
+    CompanyNotFoundException,
+    RemainingDays)
 from typing import List
 
 
-router_passing_quiz = APIRouter(prefix="/passing", tags=["Passing Quiz"])
+router_passing_quiz = APIRouter(prefix="/quiz", tags=["Passing Quiz"])
 
 @router_passing_quiz.get('/get/{quiz_id}', summary="Get quiz by id", response_model=FullQuiz)
 async def quiz(
@@ -42,14 +43,24 @@ async def passing_quiz(
         raise HTTPException(status_code=404, detail="Quiz not found.")
     except QuizNotBelongsToCompany:
         raise HTTPException(status_code=403, detail="Quiz not belong to this company.")
+    except RemainingDays as ex:
+        raise HTTPException(status_code=400, detail=str(ex))
 
-
-@router_passing_quiz.get('/rating/{company_id}', summary="Get user's Rating")
-async def rating(
+@router_passing_quiz.get('/avarage_score/{company_id}', summary="Get user's avarage score in company", response_model=QuizScore)
+async def avarage_score(
         company_id: int = Path(..., title="The ID of quiz"),
         session: AsyncSession = Depends(get_async_session),
         user: UserId = Depends(get_current_user)
     ):
     passing_quiz = PassingQuizService(session, user)
-    result = await passing_quiz.rating(company_id)
-    return {"Your rating":f"{result}%"}
+    result = await passing_quiz.avarage_score(company_id)
+    return QuizScore(score=result)
+
+@router_passing_quiz.get('/rating', summary="Get user's rating from all system", response_model=QuizScore)
+async def rating(
+        session: AsyncSession = Depends(get_async_session),
+        user: UserId = Depends(get_current_user)
+    ):
+    passing_quiz = PassingQuizService(session, user)
+    result = await passing_quiz.rating()
+    return QuizScore(score=result)

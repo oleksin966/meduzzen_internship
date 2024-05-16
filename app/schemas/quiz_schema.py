@@ -73,3 +73,6 @@ class QuizResult(BaseModel):
     score: int
     timestamp: datetime
 
+class QuizScore(BaseModel):
+    score: float
+

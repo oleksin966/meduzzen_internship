@@ -97,3 +97,23 @@ def calc_frequency_days(passed_date, frequency_days):
         return remaining_days
     else:
         return 0
+
+def calc_score(user_results):
+    score0 = user_results[0].score
+    score1 = user_results[1].score
+
+    count_questions0 = len(user_results[0].quiz.questions)
+    count_questions1 = len(user_results[1].quiz.questions)
+
+    sum_score = score0 + score1
+    sum_count_questions = count_questions0 + count_questions1
+
+    res = sum_score / sum_count_questions
+
+    for result in user_results[2:]:
+        sum_score += result.score
+        sum_count_questions += len(result.quiz.questions)
+        res = sum_score / sum_count_questions
+
+    result_in_persent = round(res * 100, 1)
+    return result_in_persent

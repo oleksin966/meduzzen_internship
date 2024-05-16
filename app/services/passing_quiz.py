@@ -5,10 +5,11 @@ from sqlalchemy.orm import joinedload
 from db.models import Company, Question, Quiz, QuizResult
 from typing import List, Dict
 from schemas.user_schema import UserId
-from utils.utils import Paginate, calc_frequency_days
+from utils.utils import Paginate, calc_frequency_days, calc_score
 from utils.exceptions import (QuizNotFound,   
     CompanyNotFoundException,   
-    QuizNotBelongsToCompany)
+    QuizNotBelongsToCompany,
+    RemainingDays)
 from datetime import datetime, timedelta
 
 class PassingQuizService:
@@ -63,11 +64,7 @@ class PassingQuizService:
             remaining_days = calc_frequency_days(quiz_result.timestamp, quiz_result.quiz.frequency_days)
             # Calculate the remaining days until the quiz can be retaken
             if remaining_days > 0:
-                raise HTTPException(
-                    status_code=400, 
-                    detail=f"You have already passed this quiz. You can retake it in {remaining_days} days."
-                )
-
+                raise RemainingDays(remaining_days)
 
 
         score_count = 0
@@ -90,7 +87,7 @@ class PassingQuizService:
         await self.session.commit()
         return quiz_result
 
-    async def rating(self, company_id: int):
+    async def avarage_score(self, company_id: int):
         # get rating from choosed company
         user_results = await self.session.execute(
             select(QuizResult) \
@@ -108,30 +105,29 @@ class PassingQuizService:
             result = user_results[0]
             return round((result.score / len(result.quiz.questions)) * 100, 1)
 
-        # according to the algorithm, we calculate the rating
-        score0 = user_results[0].score
-        score1 = user_results[1].score
-
-        count_questions0 = len(user_results[0].quiz.questions)
-        count_questions1 = len(user_results[1].quiz.questions)
-
-        sum_score = score0 + score1
-        sum_count_questions = count_questions0 + count_questions1
-
-        res = sum_score / sum_count_questions
-
-        for result in user_results[2:]:
-            sum_score += result.score
-            sum_count_questions += len(result.quiz.questions)
-            res = sum_score / sum_count_questions
-
-        result_in_persent = round(res * 100, 1)
-
-
-        return result_in_persent
+        # according to the algorithm, we calculate the user's score in company 
+        return calc_score(user_results)
 
 
 
+    async def rating(self):
+        # get rating from choosed company
+        user_results = await self.session.execute(
+            select(QuizResult) \
+            .options(joinedload(QuizResult.quiz).joinedload(Quiz.questions)) \
+            .where((QuizResult.user_id == self.user.id))
+        )
 
+        user_results = user_results.unique().scalars().all()
+
+        if not user_results:
+            return 0
+
+        if len(user_results) == 1:
+            result = user_results[0]
+            return round((result.score / len(result.quiz.questions)) * 100, 1)
+
+        # according to the algorithm, we calculate the rating in system
+        return calc_score(user_results)
 
 

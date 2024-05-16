@@ -69,7 +69,7 @@ async def get_current_user(
     return await get_auth_user(session, email)
 
 def create_access_token(data: dict):
-    expires_time = datetime.utcnow() + timedelta(hours=1)
+    expires_time = datetime.utcnow() + timedelta(hours=6)
     to_encode = data.copy()
     to_encode.update({"exp": expires_time})
     return encode(to_encode, settings.SIGNING_KEY, algorithm=settings.AUTH0_ALGORITHMS)

@@ -88,4 +88,8 @@ class QuizNotBelongsToCompany(Exception):
     def __init__(self):
         super().__init__("This Quiz dont belong to this company.")
 
+class RemainingDays(Exception):
+    def __init__(self, days):
+        super().__init__(f"You have already passed this quiz. You can retake it in {days} days.")
+
 
