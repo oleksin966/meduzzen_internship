@@ -1,0 +1,13 @@
+venv/
+.env
+
+**/__pycache__/
+tests/.pytest_cache/
+
+test.txt
+.postgres
+
+*.log
+
+alembic/versions
+
