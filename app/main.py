@@ -8,20 +8,18 @@ from routers.auth_route import router_auth
 from routers.company_route import router_company
 from routers.company_action import router_company_action
 from routers.quiz_route import router_quiz
-
+from routers.passing_quiz_route import router_passing_quiz
 
 from core.config import settings
 from starlette.middleware.sessions import SessionMiddleware
 
 
 
-from core.logging import LOGGING
-from logging import getLogger
+# from core.logging import LOGGING
+# from logging import getLogger
 
-logger = getLogger(__name__)
+# logger = getLogger(__name__)
 
-def get_project_root():
-    return Path(__file__).parent
 
 app = FastAPI()
 
@@ -44,9 +42,11 @@ app.add_middleware(SessionMiddleware, secret_key="add any string...")
 # app.include_router(router_connects)
 app.include_router(router_auth)
 #app.include_router(router_user)
-#app.include_router(router_company_action)
-#app.include_router(router_company)
+app.include_router(router_passing_quiz)
 app.include_router(router_quiz)
+app.include_router(router_company_action)
+#app.include_router(router_company)
+
 
 
 def run():

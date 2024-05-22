@@ -4,7 +4,7 @@ from sqlalchemy.orm import joinedload
 from db.models import Company, Question, CompanyUser, Quiz, Answer
 from typing import List, Dict
 from schemas.user_schema import UserId
-from schemas.quiz_schema import QuizBase, AnswersBase, QuestionSchema
+from schemas.quiz_schema import QuizBase, AnswersBase, QuestionSchema, QuestionBase, QuizSchema
 from utils.utils import Paginate
 from utils.decorators import check_if_user_or_owner
 from utils.exceptions import (QuizNotFound, 
@@ -25,14 +25,14 @@ class QuizService:
         self.user = user
 
 
-    async def all_quizzes(self, page: int) -> List[QuizBase]:
+    async def all_quizzes(self, page: int) -> List[QuizSchema]:
         '''Get all quizzes'''
         paginator = Paginate(self.session, Quiz, page)
         paginate_quiz = await paginator.fetch_results()
         return paginate_quiz
 
 
-    async def get_quizzes(self, page: int, company_id: int) -> List[QuizBase]:
+    async def get_quizzes(self, page: int, company_id: int) -> List[QuizSchema]:
         '''Get quizzes by company'''
         company = await self.session.get(Company, company_id)
         if company is None:
@@ -47,7 +47,7 @@ class QuizService:
 
     #CRUD QUIZ
     @check_if_user_or_owner # I JUST researched how custom decorator works with service
-    async def create_quiz(self, company_id: int, quiz: Dict) -> QuizBase:
+    async def create_quiz(self, company_id: int, quiz: Dict) -> Quiz:
         '''Create quiz by company id. Decorator check if user or owner proccess creatinf quiz'''
         model_dump = quiz.dict()
         model_dump['company_id'] = company_id
@@ -127,7 +127,7 @@ class QuizService:
 
 
     #CRUD QUESTION
-    async def create_question(self, quiz_id: int, question: QuestionSchema) -> QuestionSchema:
+    async def create_question(self, quiz_id: int, question: QuestionBase) -> Question:
         quiz = await self.session.get(
             Quiz, 
             quiz_id,
